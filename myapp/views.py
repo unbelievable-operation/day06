@@ -1,5 +1,5 @@
 from django.contrib.auth.hashers import make_password, check_password
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
 # Create your views here.
@@ -7,7 +7,7 @@ from django.urls import reverse
 
 from myapp.forms import UserForm
 from myapp.models import Users, UserTicket
-from utils.functions import get_ticket
+from utils.functions import get_ticket, is_login
 
 
 def register(request):
@@ -46,7 +46,7 @@ def login(request):
                     res = HttpResponseRedirect(reverse('myapp:index'))
                     # set_cookie(key, value, max_age='', expires='')
                     ticket = get_ticket()
-                    res.set_cookie('ticket', ticket, max_age=1000)
+                    res.set_cookie('ticket', ticket, max_age=10)
                     # 2.向user_ticket中存这个ticket和user的对应关系
                     UserTicket.objects.create(user=user, ticket=ticket)
 
@@ -63,6 +63,14 @@ def login(request):
             return render(request, 'login.html')
 
 
+# @is_login
 def index(request):
     if request.method == 'GET':
+        # ticket = request.COOKIES.get('ticket')
+        # user_ticket = UserTicket.objects.filter(ticket=ticket).first()
+        # if user_ticket:
+        #     user = user_ticket.user
+        #     return render(request, 'index.html', {'user':user})
+        # else:
+        #     return HttpResponseRedirect(reverse('myapp:login'))
         return render(request, 'index.html')
